@@ -24,6 +24,46 @@ describe('Pagination', () => {
     expect(pagination.vm.startsIn).toEqual(1);
   });
 
+  it('should starts with current page 1', () => {
+    expect(pagination.vm.currentPage).toEqual(1);
+  });
+
+  it('should decrease the page number 3 to 2 when click in prev button', () => {
+    pagination.setData({
+      currentPage: 3,
+      totalPages: 3
+    })
+    pagination.find('.pagination__prev-page-btn').trigger('click')
+    expect(pagination.find('.pagination__current-page').text()).toBe('2')
+  });
+
+  it('should increase the page number 1 to 2 when click in next button', () => {
+    pagination.setData({
+      currentPage: 1,
+      totalPages: 3
+    })
+    pagination.find('.pagination__next-page-btn').trigger('click')
+    expect(pagination.find('.pagination__current-page').text()).toBe('2')
+  });
+
+  it('should not decrease the page number 1 when click prev button in the first page', () => {
+    pagination.setData({
+      currentPage: 1,
+      totalPages: 1
+    })
+    pagination.find('.pagination__next-page-btn').trigger('click')
+    expect(pagination.find('.pagination__current-page').text()).toBe('1')
+  });
+
+  it('should not increase the page number 3 when click next button in the last page', () => {
+    pagination.setData({
+      currentPage: 3,
+      totalPages: 3
+    })
+    pagination.find('.pagination__next-page-btn').trigger('click')
+    expect(pagination.find('.pagination__current-page').text()).toBe('3')
+  });
+
   it('should starts getting list items and emitting', () => {
     const paginationWithItems = shallow(Pagination, {
       propsData: {
@@ -31,8 +71,7 @@ describe('Pagination', () => {
       },
       methods: {
         fetchData() {
-          this.$data.items = [{ name: 'John Doe' }];
-          this.$emit('items', this.items);
+          this.$emit('items', [{ name: 'John Doe' }]);
         },
       },
     });
@@ -40,7 +79,7 @@ describe('Pagination', () => {
   });
 
   it('should emit data when page button clicked', () => {
-    pagination.find('.pagination__page-button').trigger('click');
+    pagination.find('.pagination__prev-page-btn').trigger('click');
     expect(pagination.emitted().items[1]).toEqual([[]]);
   });
 });
